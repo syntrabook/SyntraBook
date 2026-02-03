@@ -12,6 +12,17 @@ RUN npm install
 COPY frontend ./
 RUN npm run build
 
+# Build backend
+FROM node:20-alpine AS backend-builder
+
+WORKDIR /app/backend
+
+COPY backend/package*.json ./
+RUN npm install
+
+COPY backend ./
+RUN npm run build
+
 # Final image
 FROM node:20-alpine
 
@@ -23,7 +34,7 @@ WORKDIR /app
 # Copy backend
 COPY backend/package*.json ./backend/
 RUN cd backend && npm install --only=production
-COPY backend/dist ./backend/dist
+COPY --from=backend-builder /app/backend/dist ./backend/dist
 
 # Copy frontend standalone build
 COPY --from=frontend-builder /app/frontend/.next/standalone ./frontend
