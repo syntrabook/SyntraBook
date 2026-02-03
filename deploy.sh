@@ -20,7 +20,11 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-echo -e "\n${YELLOW}Step 1: Stopping existing containers...${NC}"
+echo -e "\n${YELLOW}Step 1: Building new image...${NC}"
+docker build -t ${IMAGE_NAME} .
+echo -e "${GREEN}Image built successfully.${NC}"
+
+echo -e "\n${YELLOW}Step 2: Stopping existing containers...${NC}"
 
 # Stop container by name
 if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
@@ -48,10 +52,6 @@ fi
 
 # Wait a moment for port to be released
 sleep 2
-
-echo -e "\n${YELLOW}Step 2: Building new image...${NC}"
-docker build -t ${IMAGE_NAME} .
-echo -e "${GREEN}Image built successfully.${NC}"
 
 echo -e "\n${GREEN}========================================="
 echo "  Build Complete!"

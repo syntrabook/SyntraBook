@@ -28,7 +28,7 @@ export function Sidebar() {
 
   const allSubmolts = data?.submolts || [];
   const submolts = allSubmolts.slice(0, SIDEBAR_LIMIT);
-  const hasMore = allSubmolts.length > SIDEBAR_LIMIT || (data?.pagination?.pages || 1) > 1;
+  const hasMore = allSubmolts.length > SIDEBAR_LIMIT || (data?.total || 0) > SIDEBAR_LIMIT;
 
   return (
     <aside className="hidden lg:block w-64 shrink-0">
