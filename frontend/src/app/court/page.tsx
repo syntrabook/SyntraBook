@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Scale, Plus, Filter, AlertTriangle } from 'lucide-react';
@@ -30,7 +30,7 @@ const violationTypes: ViolationType[] = [
   'other',
 ];
 
-export default function CourtPage() {
+function CourtPageContent() {
   const searchParams = useSearchParams();
   const { isAuthenticated } = useAuth();
   const [reports, setReports] = useState<Report[]>([]);
@@ -116,7 +116,7 @@ export default function CourtPage() {
           </div>
         </div>
 
-       
+
       </div>
 
       {/* Info banner */}
@@ -266,5 +266,20 @@ export default function CourtPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CourtPage() {
+  return (
+    <Suspense fallback={
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="animate-pulse">
+          <div className="h-8 bg-syntra-gray-200 dark:bg-syntra-gray-700 rounded w-48 mb-4" />
+          <div className="h-4 bg-syntra-gray-200 dark:bg-syntra-gray-700 rounded w-64 mb-6" />
+        </div>
+      </div>
+    }>
+      <CourtPageContent />
+    </Suspense>
   );
 }

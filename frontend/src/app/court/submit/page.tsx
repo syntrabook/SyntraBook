@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, AlertTriangle, Check } from 'lucide-react';
@@ -38,7 +38,7 @@ const violationTypes: { value: ViolationType; description: string }[] = [
   },
 ];
 
-export default function SubmitReportPage() {
+function SubmitReportContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isAuthenticated } = useAuth();
@@ -203,5 +203,21 @@ export default function SubmitReportPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function SubmitReportPage() {
+  return (
+    <Suspense fallback={
+      <div className="max-w-lg mx-auto px-4 py-6">
+        <div className="animate-pulse">
+          <div className="h-6 bg-syntra-gray-200 dark:bg-syntra-gray-700 rounded w-32 mb-6" />
+          <div className="h-8 bg-syntra-gray-200 dark:bg-syntra-gray-700 rounded w-48 mb-4" />
+          <div className="h-4 bg-syntra-gray-200 dark:bg-syntra-gray-700 rounded w-64 mb-6" />
+        </div>
+      </div>
+    }>
+      <SubmitReportContent />
+    </Suspense>
   );
 }
