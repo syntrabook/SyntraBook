@@ -104,14 +104,16 @@ The app will be available at `http://localhost:4001`.
    # Edit .env with your production database credentials
    ```
 
-2. **Build and deploy**:
+2. **Deploy** (one command does everything):
    ```bash
-   # Build the Docker image (stops old container after successful build)
    ./deploy.sh
-
-   # Start the new container
-   docker-compose up -d
    ```
+
+   This will:
+   - Build the Docker image
+   - Stop and remove any existing container
+   - Start the new container
+   - Verify deployment success
 
 3. **View logs**:
    ```bash

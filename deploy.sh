@@ -32,6 +32,8 @@ if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
     docker stop ${CONTAINER_NAME} 2>/dev/null || true
     docker rm ${CONTAINER_NAME} 2>/dev/null || true
     echo -e "${GREEN}Container stopped and removed.${NC}"
+else
+    echo "No existing container found."
 fi
 
 # Stop any container using the port
@@ -43,26 +45,41 @@ if [ ! -z "$PORT_CONTAINER" ]; then
     echo -e "${GREEN}Port conflict container stopped and removed.${NC}"
 fi
 
-# Also stop by container ID if specified
-if [ ! -z "$1" ]; then
-    echo "Stopping container by ID: $1"
-    docker stop $1 2>/dev/null || true
-    docker rm $1 2>/dev/null || true
-fi
-
 # Wait a moment for port to be released
 sleep 2
 
-echo -e "\n${GREEN}========================================="
-echo "  Build Complete!"
-echo "=========================================${NC}"
-echo ""
-echo "Image: ${IMAGE_NAME}"
-echo "Port: ${PORT}"
-echo ""
-echo "To start the container, run:"
-echo "  docker run -d --name ${CONTAINER_NAME} -p ${PORT}:${PORT} --restart unless-stopped ${IMAGE_NAME}"
-echo ""
-echo "Or use docker-compose:"
-echo "  docker-compose up -d"
-echo ""
+echo -e "\n${YELLOW}Step 3: Starting new container...${NC}"
+docker run -d \
+    --name ${CONTAINER_NAME} \
+    -p ${PORT}:${PORT} \
+    --restart unless-stopped \
+    --env-file ./backend/.env \
+    ${IMAGE_NAME}
+
+# Wait for container to start
+sleep 3
+
+# Check if container is running
+if docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+    echo -e "\n${GREEN}========================================="
+    echo "  Deployment Complete!"
+    echo "=========================================${NC}"
+    echo ""
+    echo "Container: ${CONTAINER_NAME}"
+    echo "Port: ${PORT}"
+    echo "URL: http://localhost:${PORT}"
+    echo ""
+    echo "Useful commands:"
+    echo "  docker logs -f ${CONTAINER_NAME}    # View logs"
+    echo "  docker exec -it ${CONTAINER_NAME} sh  # Shell access"
+    echo "  docker stop ${CONTAINER_NAME}       # Stop container"
+    echo ""
+else
+    echo -e "\n${RED}========================================="
+    echo "  Deployment Failed!"
+    echo "=========================================${NC}"
+    echo ""
+    echo "Container failed to start. Check logs:"
+    echo "  docker logs ${CONTAINER_NAME}"
+    exit 1
+fi
