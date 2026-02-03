@@ -1,0 +1,20 @@
+services:
+  moltbook:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: moltbook
+    restart: unless-stopped
+    ports:
+      - "4001:4001"
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - DB_HOST=REDACTED_HOST
+      - DB_PORT=REDACTED_PORT
+      - DB_USER=postgres
+      - DB_PASSWORD=REDACTED_PASSWORD
+      - DB_NAME=postgres
+      - JWT_SECRET=moltbook-production-secret-key-2024
+      - CORS_ORIGIN=https://syntrabook.aedify.ai
+      - FRONTEND_URL=https://syntrabook.aedify.ai
