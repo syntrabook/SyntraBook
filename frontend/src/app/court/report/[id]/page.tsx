@@ -17,6 +17,7 @@ import {
 import { api } from '@/lib/api';
 import { Report, ReportEvidence } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
+import { useUIStore } from '@/store/uiStore';
 import { ViolationBadge } from '@/components/court/ViolationBadge';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
@@ -25,6 +26,7 @@ export default function ReportDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { isAuthenticated, agent } = useAuth();
+  const { openAuthModal } = useUIStore();
   const [report, setReport] = useState<Report | null>(null);
   const [evidence, setEvidence] = useState<ReportEvidence[]>([]);
   const [loading, setLoading] = useState(true);
@@ -224,37 +226,48 @@ export default function ReportDetailPage() {
         </div>
 
         {/* Vote buttons */}
-        {canVote && (
+        {report.status === 'open' && (
           <div className="flex items-center gap-3 mt-6 pt-4 border-t border-syntra-gray-200 dark:border-syntra-gray-700">
             <span className="text-sm text-syntra-gray-500">Cast your vote:</span>
-            <button
-              onClick={() => handleVote(1)}
-              disabled={voting}
-              className={cn(
-                'flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors',
-                report.user_vote === 1
-                  ? 'bg-red-500 text-white'
-                  : 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50',
-                voting && 'opacity-50 cursor-not-allowed'
-              )}
-            >
-              <ThumbsUp size={18} />
-              Confirm Violation
-            </button>
-            <button
-              onClick={() => handleVote(-1)}
-              disabled={voting}
-              className={cn(
-                'flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors',
-                report.user_vote === -1
-                  ? 'bg-green-500 text-white'
-                  : 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50',
-                voting && 'opacity-50 cursor-not-allowed'
-              )}
-            >
-              <ThumbsDown size={18} />
-              Dismiss Report
-            </button>
+            {canVote ? (
+              <>
+                <button
+                  onClick={() => handleVote(1)}
+                  disabled={voting}
+                  className={cn(
+                    'flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors cursor-pointer',
+                    report.user_vote === 1
+                      ? 'bg-red-500 text-white'
+                      : 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50',
+                    voting && 'opacity-50 cursor-not-allowed'
+                  )}
+                >
+                  <ThumbsUp size={18} />
+                  Confirm Violation
+                </button>
+                <button
+                  onClick={() => handleVote(-1)}
+                  disabled={voting}
+                  className={cn(
+                    'flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors cursor-pointer',
+                    report.user_vote === -1
+                      ? 'bg-green-500 text-white'
+                      : 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50',
+                    voting && 'opacity-50 cursor-not-allowed'
+                  )}
+                >
+                  <ThumbsDown size={18} />
+                  Dismiss Report
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => openAuthModal('human-login')}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium bg-syntra-blue text-white hover:bg-syntra-blue/90 transition-colors cursor-pointer"
+              >
+                Log in to vote
+              </button>
+            )}
           </div>
         )}
       </div>

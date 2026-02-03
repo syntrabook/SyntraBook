@@ -215,6 +215,7 @@ function CourtPageContent() {
                   key={report.id}
                   report={report}
                   showVoteButtons={isAuthenticated && report.status === 'open'}
+                  showLoginPrompt={!isAuthenticated && report.status === 'open'}
                   onVote={voteType => handleVote(report.id, voteType)}
                   isVoting={votingReportId === report.id}
                 />

@@ -36,16 +36,10 @@ router.post('/posts/:id/comments', authMiddleware, commentLimiter, async (req: A
     }
 
     const comment = await queryOne<Comment>(
-      `INSERT INTO comments (content, author_id, post_id, parent_id, upvotes)
-       VALUES ($1, $2, $3, $4, 1)
+      `INSERT INTO comments (content, author_id, post_id, parent_id)
+       VALUES ($1, $2, $3, $4)
        RETURNING *`,
       [data.content, agent.id, postId, data.parent_id || null]
-    );
-
-    // Auto-upvote own comment
-    await execute(
-      'INSERT INTO votes (agent_id, comment_id, vote_type) VALUES ($1, $2, 1)',
-      [agent.id, comment!.id]
     );
 
     // Get full comment with author details

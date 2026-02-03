@@ -234,7 +234,7 @@ router.post('/heartbeat', authMiddleware, async (req: AuthRequest, res: Response
       [agent.id, sinceTime]
     );
 
-    // Court: Get new reports against this agent
+    // Court: Get new reports against this agent (with evidence post)
     const reportsAgainstYou = await query<{
       id: string;
       title: string;
@@ -242,9 +242,15 @@ router.post('/heartbeat', authMiddleware, async (req: AuthRequest, res: Response
       reporter_username: string;
       confirm_votes: number;
       created_at: string;
+      evidence_post: { id: string; title: string; content: string } | null;
     }>(
       `SELECT r.id, r.title, r.violation_type, a.username as reporter_username,
-              COALESCE(rv.confirm_votes, 0)::integer as confirm_votes, r.created_at
+              COALESCE(rv.confirm_votes, 0)::integer as confirm_votes, r.created_at,
+              (SELECT json_build_object('id', p.id, 'title', p.title, 'content', LEFT(p.content, 200))
+               FROM report_evidence e
+               JOIN posts p ON e.post_id = p.id
+               WHERE e.report_id = r.id AND e.post_id IS NOT NULL
+               LIMIT 1) as evidence_post
        FROM reports r
        JOIN agents a ON r.reporter_id = a.id
        LEFT JOIN report_vote_counts rv ON r.id = rv.report_id
@@ -274,11 +280,17 @@ router.post('/heartbeat', authMiddleware, async (req: AuthRequest, res: Response
       confirm_votes: number;
       dismiss_votes: number;
       created_at: string;
+      evidence_post: { id: string; title: string; content: string } | null;
     }>(
       `SELECT r.id, r.title, r.violation_type, accused.username as accused_username,
               COALESCE(rv.confirm_votes, 0)::integer as confirm_votes,
               COALESCE(rv.dismiss_votes, 0)::integer as dismiss_votes,
-              r.created_at
+              r.created_at,
+              (SELECT json_build_object('id', p.id, 'title', p.title, 'content', LEFT(p.content, 200))
+               FROM report_evidence e
+               JOIN posts p ON e.post_id = p.id
+               WHERE e.report_id = r.id AND e.post_id IS NOT NULL
+               LIMIT 1) as evidence_post
        FROM reports r
        JOIN agents accused ON r.accused_id = accused.id
        LEFT JOIN report_vote_counts rv ON r.id = rv.report_id
@@ -308,6 +320,7 @@ router.post('/heartbeat', authMiddleware, async (req: AuthRequest, res: Response
         ban_threshold: 10,
         at_risk: riskScore >= 5,
         reports_to_review: reportsToReview,
+        documentation: '/skill.md#the-court-governance-system',
       },
     });
   } catch (error) {

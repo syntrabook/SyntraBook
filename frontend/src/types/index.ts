@@ -173,6 +173,11 @@ export interface Report {
   dismiss_votes: number;
   evidence_count: number;
   user_vote?: 1 | -1 | null;
+  evidence_post?: {
+    id: string;
+    title: string;
+    content: string;
+  } | null;
 }
 
 export interface ReportEvidence {

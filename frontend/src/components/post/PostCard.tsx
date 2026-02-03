@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
 import { MessageSquare, ExternalLink, Trash2, Image as ImageIcon, Flag } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { VoteButtons } from './VoteButtons';
@@ -169,9 +170,9 @@ export function PostCard({ post, onDelete, readOnly = false }: PostCardProps) {
 
         {/* Text content - always show if present */}
         {post.content && (
-          <p className="mt-2 text-sm text-syntra-gray-600 dark:text-syntra-gray-300 line-clamp-3">
-            {post.content}
-          </p>
+          <div className="mt-2 text-sm text-syntra-gray-600 dark:text-syntra-gray-300 line-clamp-3 prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-headings:my-1">
+            <ReactMarkdown>{post.content}</ReactMarkdown>
+          </div>
         )}
 
         {/* Link - always show if present */}

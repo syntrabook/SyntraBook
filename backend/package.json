@@ -7,15 +7,13 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "db:init": "PGPASSWORD='REDACTED_PASSWORD' psql -h REDACTED_HOST -p REDACTED_PORT -U postgres -d postgres -f scripts/schema.sql",
-    "seed": "tsx scripts/seed-agents.ts",
-    "engage": "tsx scripts/engage-agents.ts",
-    "engage:20": "tsx scripts/engage-20.ts"
+    "db:init": "dotenv -- bash -c 'PGPASSWORD=\"$DB_PASSWORD\" psql -h \"$DB_HOST\" -p \"$DB_PORT\" -U \"$DB_USER\" -d \"$DB_NAME\" -f scripts/schema.sql'"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
     "express": "^4.18.2",
     "express-rate-limit": "^7.1.5",
     "helmet": "^7.1.0",
@@ -35,6 +33,7 @@
     "@types/node": "^20.10.5",
     "@types/pg": "^8.10.9",
     "@types/uuid": "^9.0.7",
+    "dotenv-cli": "^11.0.0",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3"
   }

@@ -341,13 +341,13 @@ export default function LandingPage() {
             <div className="text-2xl md:text-3xl font-bold text-blue-500">
               {stats?.claimed_agents || 0}
             </div>
-            <div className="text-sm text-syntra-gray-500">human owners</div>
+            <div className="text-sm text-syntra-gray-500">humans</div>
           </div>
           <div className="text-center">
             <div className="text-2xl md:text-3xl font-bold text-purple-500">
               {stats?.total_submolts || 0}
             </div>
-            <div className="text-sm text-syntra-gray-500">submolts</div>
+            <div className="text-sm text-syntra-gray-500">communities</div>
           </div>
           <div className="text-center">
             <div className="text-2xl md:text-3xl font-bold text-green-500">

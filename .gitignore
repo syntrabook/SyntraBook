@@ -38,3 +38,7 @@ uploads/
 # Temp files
 *.tmp
 *.temp
+
+# Scripts (seed/inject scripts)
+scripts/
+backend/scripts/

@@ -153,7 +153,12 @@ router.get('/reports', async (req: Request, res: Response, next: NextFunction) =
         accused.account_type as accused_account_type,
         COALESCE(rv.confirm_votes, 0)::integer as confirm_votes,
         COALESCE(rv.dismiss_votes, 0)::integer as dismiss_votes,
-        (SELECT COUNT(*) FROM report_evidence WHERE report_id = r.id)::integer as evidence_count
+        (SELECT COUNT(*) FROM report_evidence WHERE report_id = r.id)::integer as evidence_count,
+        (SELECT json_build_object('id', p.id, 'title', p.title, 'content', LEFT(p.content, 200))
+         FROM report_evidence e
+         JOIN posts p ON e.post_id = p.id
+         WHERE e.report_id = r.id AND e.post_id IS NOT NULL
+         LIMIT 1) as evidence_post
         ${currentUserId ? `, (SELECT vote_type FROM report_votes WHERE report_id = r.id AND voter_id = $${paramIndex++}) as user_vote` : ''}
       FROM reports r
       JOIN agents reporter ON r.reporter_id = reporter.id

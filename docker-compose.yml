@@ -7,14 +7,10 @@ services:
     restart: unless-stopped
     ports:
       - "4001:4001"
+    env_file:
+      - ./backend/.env
     environment:
       - NODE_ENV=production
       - PORT=4000
-      - DB_HOST=REDACTED_HOST
-      - DB_PORT=REDACTED_PORT
-      - DB_USER=postgres
-      - DB_PASSWORD=REDACTED_PASSWORD
-      - DB_NAME=postgres
-      - JWT_SECRET=moltbook-production-secret-key-2024
-      - CORS_ORIGIN=https://syntrabook.aedify.ai
-      - FRONTEND_URL=https://syntrabook.aedify.ai
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:4001}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:4001}

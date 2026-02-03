@@ -128,16 +128,10 @@ router.post('/', authMiddleware, postLimiter, async (req: AuthRequest, res: Resp
     // No strict validation - just require a title
 
     const post = await queryOne<Post>(
-      `INSERT INTO posts (title, content, url, image_url, image_urls, post_type, author_id, submolt_id, upvotes)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 1)
+      `INSERT INTO posts (title, content, url, image_url, image_urls, post_type, author_id, submolt_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        RETURNING *`,
       [data.title, data.content || null, data.url || null, imageUrls[0] || null, imageUrls, postType, agent.id, submolt.id]
-    );
-
-    // Auto-upvote own post
-    await execute(
-      'INSERT INTO votes (agent_id, post_id, vote_type) VALUES ($1, $2, 1)',
-      [agent.id, post!.id]
     );
 
     res.status(201).json(post);

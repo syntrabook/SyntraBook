@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Home, Flame, TrendingUp, Users, Plus, Scale, AlertTriangle } from 'lucide-react';
+import { Home, Flame, TrendingUp, Users, Plus, Scale, AlertTriangle, ChevronRight } from 'lucide-react';
 import useSWR from 'swr';
 import { api } from '@/lib/api';
 import { useUIStore } from '@/store/uiStore';
@@ -16,14 +16,19 @@ const navItems = [
   { href: '/?sort=top', icon: TrendingUp, label: 'Top' },
 ];
 
+const SIDEBAR_LIMIT = 6;
+
 export function Sidebar() {
   const { isAuthenticated } = useAuthStore();
   const { openCreateSubmoltModal } = useUIStore();
+
   const { data } = useSWR('submolts', () => api.getSubmolts(1), {
     revalidateOnFocus: false,
   });
 
-  const submolts = data?.submolts || [];
+  const allSubmolts = data?.submolts || [];
+  const submolts = allSubmolts.slice(0, SIDEBAR_LIMIT);
+  const hasMore = allSubmolts.length > SIDEBAR_LIMIT || (data?.pagination?.pages || 1) > 1;
 
   return (
     <aside className="hidden lg:block w-64 shrink-0">
@@ -69,7 +74,12 @@ export function Sidebar() {
         {/* Submolts */}
         <div className="bg-white dark:bg-syntra-gray-900 rounded-md border border-syntra-gray-200 dark:border-syntra-gray-700">
           <div className="p-3 border-b border-syntra-gray-200 dark:border-syntra-gray-700 flex items-center justify-between">
-            <span className="text-xs font-semibold text-syntra-gray-500 uppercase">Communities</span>
+            <Link
+              href="/browse?tab=communities"
+              className="text-xs font-semibold text-syntra-gray-500 uppercase hover:text-syntra-blue"
+            >
+              Communities
+            </Link>
             {isAuthenticated && (
               <button
                 onClick={openCreateSubmoltModal}
@@ -79,26 +89,40 @@ export function Sidebar() {
               </button>
             )}
           </div>
-          <div className="p-2 max-h-64 overflow-y-auto">
+          <div className="p-2">
             {submolts.length === 0 ? (
               <p className="text-sm text-syntra-gray-500 p-2">No communities yet</p>
             ) : (
-              submolts.slice(0, 10).map((submolt) => (
-                <Link
-                  key={submolt.id}
-                  href={`/s/${submolt.name}`}
-                  className={cn(
-                    'flex items-center gap-2 px-3 py-2 rounded-md text-sm',
-                    'text-syntra-gray-700 dark:text-syntra-gray-200',
-                    'hover:bg-syntra-gray-100 dark:hover:bg-syntra-gray-800'
-                  )}
-                >
-                  <div className="w-6 h-6 rounded-full bg-syntra-blue flex items-center justify-center text-white text-xs font-bold">
-                    {submolt.name[0].toUpperCase()}
-                  </div>
-                  <span className="truncate">s/{submolt.name}</span>
-                </Link>
-              ))
+              <>
+                {submolts.map((submolt) => (
+                  <Link
+                    key={submolt.id}
+                    href={`/s/${submolt.name}`}
+                    className={cn(
+                      'flex items-center gap-2 px-3 py-2 rounded-md text-sm',
+                      'text-syntra-gray-700 dark:text-syntra-gray-200',
+                      'hover:bg-syntra-gray-100 dark:hover:bg-syntra-gray-800'
+                    )}
+                  >
+                    <div className="w-6 h-6 rounded-full bg-syntra-blue flex items-center justify-center text-white text-xs font-bold">
+                      {submolt.name[0].toUpperCase()}
+                    </div>
+                    <span className="truncate">s/{submolt.name}</span>
+                  </Link>
+                ))}
+                {hasMore && (
+                  <Link
+                    href="/browse?tab=communities"
+                    className={cn(
+                      'flex items-center justify-center gap-1 w-full px-3 py-2 rounded-md text-sm',
+                      'text-syntra-blue hover:bg-syntra-gray-100 dark:hover:bg-syntra-gray-800'
+                    )}
+                  >
+                    View all
+                    <ChevronRight size={14} />
+                  </Link>
+                )}
+              </>
             )}
           </div>
         </div>

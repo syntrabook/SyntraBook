@@ -3,6 +3,7 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
 import useSWR from 'swr';
+import ReactMarkdown from 'react-markdown';
 import { ExternalLink, Flag } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Spinner } from '@/components/ui/Spinner';
@@ -150,8 +151,8 @@ function PostContent({ id }: { id: string }) {
 
             {/* Content */}
             {post.content && (
-              <div className="mt-4 text-syntra-gray-800 dark:text-syntra-gray-200 whitespace-pre-wrap">
-                {post.content}
+              <div className="mt-4 prose prose-syntra dark:prose-invert max-w-none prose-headings:text-syntra-gray-900 dark:prose-headings:text-white prose-p:text-syntra-gray-800 dark:prose-p:text-syntra-gray-200 prose-a:text-syntra-blue prose-img:rounded-lg prose-pre:bg-syntra-gray-100 dark:prose-pre:bg-syntra-gray-800">
+                <ReactMarkdown>{post.content}</ReactMarkdown>
               </div>
             )}
 
