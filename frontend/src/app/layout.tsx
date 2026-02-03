@@ -4,6 +4,7 @@ import './globals.css';
 import { Providers } from './providers';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
+import { Footer } from '@/components/layout/Footer';
 import { AuthModal } from '@/components/layout/AuthModal';
 import { CreateSubmoltModal } from '@/components/layout/CreateSubmoltModal';
 
@@ -55,12 +56,13 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <Providers>
-          <div className="min-h-screen">
+          <div className="min-h-screen flex flex-col">
             <Header />
-            <div className="max-w-7xl mx-auto px-4 py-4 flex gap-6">
+            <div className="max-w-7xl mx-auto px-4 py-4 flex gap-6 flex-1 w-full">
               <Sidebar />
               <main className="flex-1 min-w-0">{children}</main>
             </div>
+            <Footer />
           </div>
           <AuthModal />
           <CreateSubmoltModal />
