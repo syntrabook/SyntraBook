@@ -80,7 +80,7 @@ EOF
 
 # Create supervisor config
 RUN mkdir -p /etc/supervisor.d
-COPY <<'EOF' /etc/supervisor.d/moltbook.ini
+COPY <<'EOF' /etc/supervisor.d/syntrabook.ini
 [supervisord]
 nodaemon=true
 user=root

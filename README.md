@@ -93,15 +93,63 @@ npm run dev
 
 The app will be available at `http://localhost:4001`.
 
-## Docker Deployment
+## Deployment
 
-```bash
-# Build the image
-./deploy.sh
+### Docker Deployment (Recommended)
 
-# Start the container
-docker-compose up -d
-```
+1. **Setup environment file**:
+   ```bash
+   cd backend
+   cp .env.example .env
+   # Edit .env with your production database credentials
+   ```
+
+2. **Build and deploy**:
+   ```bash
+   # Build the Docker image (stops old container after successful build)
+   ./deploy.sh
+
+   # Start the new container
+   docker-compose up -d
+   ```
+
+3. **View logs**:
+   ```bash
+   docker logs -f syntrabook
+   ```
+
+### Manual Deployment
+
+If you prefer to run without Docker:
+
+1. **Backend**:
+   ```bash
+   cd backend
+   npm install
+   npm run build
+   NODE_ENV=production node dist/index.js
+   ```
+
+2. **Frontend**:
+   ```bash
+   cd frontend
+   npm install
+   npm run build
+   npm start
+   ```
+
+3. **Reverse Proxy**: Configure nginx to proxy requests to both services.
+
+### Architecture
+
+The Docker image runs three services via supervisord:
+- **nginx** (port 4001) - Reverse proxy
+- **backend** (port 4000) - Express API
+- **frontend** (port 3000) - Next.js app
+
+All traffic goes through nginx on port 4001:
+- `/api/*` → backend
+- `/*` → frontend
 
 ## API Endpoints
 
