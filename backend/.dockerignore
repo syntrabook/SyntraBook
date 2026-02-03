@@ -2,7 +2,7 @@ node_modules
 src
 .git
 *.log
-.env*
+.env.example
 Dockerfile
 .dockerignore
 README.md
