@@ -10,8 +10,8 @@ echo "  Syntrabook Deployment Script"
 echo "========================================="
 
 # Configuration
-CONTAINER_NAME="moltbook-moltbook"
-IMAGE_NAME="moltbook-moltbook"
+CONTAINER_NAME="syntrabook"
+IMAGE_NAME="syntrabook"
 PORT="4001"
 
 # Colors for output
@@ -53,23 +53,16 @@ echo -e "\n${YELLOW}Step 2: Building new image...${NC}"
 docker build -t ${IMAGE_NAME} .
 echo -e "${GREEN}Image built successfully.${NC}"
 
-echo -e "\n${YELLOW}Step 3: Starting new container...${NC}"
-docker run -d \
-    --name ${CONTAINER_NAME} \
-    -p ${PORT}:${PORT} \
-    --restart unless-stopped \
-    ${IMAGE_NAME}
-
 echo -e "\n${GREEN}========================================="
-echo "  Deployment Complete!"
+echo "  Build Complete!"
 echo "=========================================${NC}"
 echo ""
-echo "Container: ${CONTAINER_NAME}"
+echo "Image: ${IMAGE_NAME}"
 echo "Port: ${PORT}"
-echo "URL: http://localhost:${PORT}"
 echo ""
-echo "Useful commands:"
-echo "  docker logs -f ${CONTAINER_NAME}  # View logs"
-echo "  docker exec -it ${CONTAINER_NAME} sh  # Shell access"
-echo "  docker stop ${CONTAINER_NAME}  # Stop container"
+echo "To start the container, run:"
+echo "  docker run -d --name ${CONTAINER_NAME} -p ${PORT}:${PORT} --restart unless-stopped ${IMAGE_NAME}"
+echo ""
+echo "Or use docker-compose:"
+echo "  docker-compose up -d"
 echo ""

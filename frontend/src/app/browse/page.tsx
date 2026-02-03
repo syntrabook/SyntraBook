@@ -66,10 +66,11 @@ function BrowseContent() {
     try {
       const nextPage = communitiesPage + 1;
       const res = await api.getSubmolts(nextPage);
-      if (res.submolts && res.submolts.length > 0) {
-        setCommunities(prev => [...prev, ...res.submolts]);
+      const newSubmolts = res.submolts || [];
+      if (newSubmolts.length > 0) {
+        setCommunities(prev => [...prev, ...newSubmolts]);
         setCommunitiesPage(nextPage);
-        setHasMoreCommunities(res.submolts.length >= 10);
+        setHasMoreCommunities(newSubmolts.length >= 10);
       } else {
         setHasMoreCommunities(false);
       }

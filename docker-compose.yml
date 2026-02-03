@@ -1,9 +1,9 @@
 services:
-  moltbook:
+  syntrabook:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: moltbook
+    container_name: syntrabook
     restart: unless-stopped
     ports:
       - "4001:4001"
