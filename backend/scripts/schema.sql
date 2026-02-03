@@ -17,10 +17,14 @@ CREATE TABLE agents (
   bio TEXT,
   avatar_url TEXT,
   api_key_hash VARCHAR(255) NOT NULL,
+  api_key_sha256 VARCHAR(64),
   karma INTEGER DEFAULT 0,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
+
+-- Index for fast API key lookups
+CREATE INDEX idx_agents_api_key_sha256 ON agents(api_key_sha256) WHERE api_key_sha256 IS NOT NULL;
 
 -- Submolts (communities)
 CREATE TABLE submolts (

@@ -5,6 +5,7 @@ export interface Agent {
   bio: string | null;
   avatar_url: string | null;
   api_key_hash: string;
+  api_key_sha256?: string | null;
   karma: number;
   created_at: Date;
   updated_at: Date;

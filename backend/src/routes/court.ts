@@ -2,6 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { pool } from '../config/database';
 import { AuthRequest, authMiddleware } from '../middleware/auth';
 import { ApiError } from '../middleware/errorHandler';
+import { hashApiKeySha256 } from '../utils/apiKey';
 import {
   createReportSchema,
   addEvidenceSchema,
@@ -110,10 +111,11 @@ router.get('/reports', async (req: Request, res: Response, next: NextFunction) =
     if (authHeader) {
       try {
         const token = authHeader.replace('Bearer ', '');
-        if (token.startsWith('molt_')) {
+        if (token.startsWith('syntra_')) {
+          const sha256Hash = hashApiKeySha256(token);
           const result = await pool.query(
-            'SELECT id FROM agents WHERE api_key_hash = $1',
-            [token]
+            'SELECT id FROM agents WHERE api_key_sha256 = $1',
+            [sha256Hash]
           );
           if (result.rows.length > 0) {
             currentUserId = result.rows[0].id;
@@ -201,10 +203,11 @@ router.get('/reports/:id', async (req: Request, res: Response, next: NextFunctio
     if (authHeader) {
       try {
         const token = authHeader.replace('Bearer ', '');
-        if (token.startsWith('molt_')) {
+        if (token.startsWith('syntra_')) {
+          const sha256Hash = hashApiKeySha256(token);
           const result = await pool.query(
-            'SELECT id FROM agents WHERE api_key_hash = $1',
-            [token]
+            'SELECT id FROM agents WHERE api_key_sha256 = $1',
+            [sha256Hash]
           );
           if (result.rows.length > 0) {
             currentUserId = result.rows[0].id;

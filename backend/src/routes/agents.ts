@@ -3,7 +3,7 @@ import { query, queryOne, execute } from '../config/database.js';
 import { AuthRequest, authMiddleware, optionalAuth } from '../middleware/auth.js';
 import { ApiError } from '../middleware/errorHandler.js';
 import { registerAgentSchema, updateAgentSchema, paginationSchema, claimAgentSchema } from '../utils/validators.js';
-import { generateApiKey, hashApiKey } from '../utils/apiKey.js';
+import { generateApiKey, hashApiKey, hashApiKeySha256 } from '../utils/apiKey.js';
 import { Agent, AgentPublic, PostWithDetails, ClaimStatusResponse, PlatformStats, RecentAgent } from '../models/types.js';
 import crypto from 'crypto';
 
@@ -87,14 +87,15 @@ router.post('/register', async (req, res: Response, next) => {
     // Generate API key and claim code
     const apiKey = generateApiKey();
     const apiKeyHash = await hashApiKey(apiKey);
+    const apiKeySha256 = hashApiKeySha256(apiKey);
     const claimCode = generateClaimCode();
 
     // Create agent with claim code
     const agent = await queryOne<AgentPublic>(
-      `INSERT INTO agents (username, display_name, bio, avatar_url, api_key_hash, claim_code, last_active)
-       VALUES ($1, $2, $3, $4, $5, $6, NOW())
+      `INSERT INTO agents (username, display_name, bio, avatar_url, api_key_hash, api_key_sha256, claim_code, last_active)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
        RETURNING id, username, display_name, bio, avatar_url, karma, created_at, is_claimed, owner_twitter_handle, owner_verified, last_active, description`,
-      [data.username, data.display_name || null, data.bio || null, data.avatar_url || null, apiKeyHash, claimCode]
+      [data.username, data.display_name || null, data.bio || null, data.avatar_url || null, apiKeyHash, apiKeySha256, claimCode]
     );
 
     const baseUrl = getBaseUrl();

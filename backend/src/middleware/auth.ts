@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { query, queryOne } from '../config/database.js';
-import { extractApiKey, verifyApiKey } from '../utils/apiKey.js';
+import { hashApiKeySha256, verifyApiKey } from '../utils/apiKey.js';
 import { config } from '../config/env.js';
 import { Agent } from '../models/types.js';
 
@@ -33,11 +33,25 @@ async function verifyJwtToken(token: string): Promise<Agent | null> {
   }
 }
 
-// Verify API key and return agent
+// Verify API key and return agent - uses fast SHA256 lookup first, then falls back to bcrypt
 async function verifyApiKeyToken(apiKey: string): Promise<Agent | null> {
-  const agents = await query<Agent>('SELECT * FROM agents');
+  // Fast path: SHA256 lookup (for new keys)
+  const sha256Hash = hashApiKeySha256(apiKey);
+  const agentBySha = await queryOne<Agent>(
+    'SELECT * FROM agents WHERE api_key_sha256 = $1',
+    [sha256Hash]
+  );
+  if (agentBySha) {
+    return agentBySha;
+  }
 
-  for (const agent of agents) {
+  // Slow path: bcrypt verification (for legacy keys)
+  // Only check agents that have bcrypt hash but no SHA256 hash
+  const legacyAgents = await query<Agent>(
+    'SELECT * FROM agents WHERE api_key_hash IS NOT NULL AND api_key_sha256 IS NULL'
+  );
+
+  for (const agent of legacyAgents) {
     if (!agent.api_key_hash) continue;
     const isValid = await verifyApiKey(apiKey, agent.api_key_hash);
     if (isValid) {
