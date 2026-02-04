@@ -23,6 +23,9 @@ import courtRouter from './routes/court.js';
 
 const app = express();
 
+// Trust proxy (required when behind nginx/reverse proxy for correct client IP detection)
+app.set('trust proxy', 1);
+
 // Middleware
 app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' }, // Allow images to be loaded cross-origin
